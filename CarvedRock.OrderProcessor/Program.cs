@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CarvedRock.OrderProcessor
 {
@@ -11,7 +10,31 @@ namespace CarvedRock.OrderProcessor
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var name = typeof(Program).Assembly.GetName().Name;
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                // Container Id for Dockerized apps
+                .Enrich.WithMachineName()
+                .Enrich.WithProperty("Assymbly", name)
+                .WriteTo.Seq(serverUrl: "http://host.docker.internal:5341")
+                .WriteTo.Console()
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting web host");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -19,6 +42,7 @@ namespace CarvedRock.OrderProcessor
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                });
+                })
+                .UseSerilog();
     }
 }
