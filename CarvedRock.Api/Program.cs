@@ -18,6 +18,7 @@ namespace CarvedRock.Api
                 // Container Id for Dockerized apps
                 .Enrich.WithMachineName()
                 .Enrich.WithProperty("Assymbly", name)
+                .WriteTo.Seq(serverUrl: "http://host.docker.internal:5341")
                 .WriteTo.Console()
                 .CreateLogger();
 
