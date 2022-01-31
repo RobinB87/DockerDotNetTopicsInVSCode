@@ -29,13 +29,56 @@
       "label": "watch",
       "command": "dotnet",
       "type": "process",
-      "args": [
-        "watch",
-        "run",
-        "--project",
-        "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj"
-      ],
+      "args": ["watch", "run", "--project", "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj"],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "type": "docker-build",
+      "label": "docker-build: debug",
+      "dependsOn": ["build"],
+      "dockerBuild": {
+        "tag": "dockerdotnettopicsinvscode:dev",
+        "target": "base",
+        "dockerfile": "${workspaceFolder}/CarvedRock.Api/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj"
+      }
+    },
+    {
+      "type": "docker-build",
+      "label": "docker-build: release",
+      "dependsOn": ["build"],
+      "dockerBuild": {
+        "tag": "dockerdotnettopicsinvscode:latest",
+        "dockerfile": "${workspaceFolder}/CarvedRock.Api/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      },
+      "netCore": {
+        "appProject": "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj"
+      }
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: debug",
+      "dependsOn": ["docker-build: debug"],
+      "dockerRun": {},
+      "netCore": {
+        "appProject": "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj",
+        "enableDebugging": true
+      }
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: release",
+      "dependsOn": ["docker-build: release"],
+      "dockerRun": {},
+      "netCore": {
+        "appProject": "${workspaceFolder}/CarvedRock.Api/CarvedRock.Api.csproj"
+      }
     }
   ]
 }
