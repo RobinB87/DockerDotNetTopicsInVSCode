@@ -14,11 +14,10 @@ namespace CarvedRock.Api.Domain
             _logger = logger;
         }
         public Guid PlaceQuickOrder(QuickOrder order, int customerId)
-        {
-            //_logger.LogInformation("Placing order and sending update for inventory...");
+        {                      
+            _logger.LogInformation("Placing order and sending update for inventory...");
             // persist order to database or wherever
-
-            // post "orderplaced" event to rabbitmq
+           // post "orderplaced" event to rabbitmq
 
             return Guid.NewGuid();
         }
