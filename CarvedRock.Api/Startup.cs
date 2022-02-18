@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using CarvedRock.Api.Domain;
 using CarvedRock.Api.Interfaces;
 using CarvedRock.Api.Middleware;
+using Serilog;
 
 namespace CarvedRock.Api
 {
@@ -21,6 +22,11 @@ namespace CarvedRock.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("Db");
+
+            Log.ForContext("ConnectionString", connectionString)
+                .Information("Loaded config!", connectionString);
+
             services.AddScoped<IProductLogic, ProductLogic>();
             services.AddScoped<IQuickOrderLogic, QuickOrderLogic>();
 
