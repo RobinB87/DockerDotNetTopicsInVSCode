@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
 using Serilog;
+using System;
+using System.IO;
 
 namespace CarvedRock.InvoiceGenerator
 {
@@ -7,10 +9,21 @@ namespace CarvedRock.InvoiceGenerator
     {
         static void Main(string[] args)
         {
+            var _config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+                .AddJsonFile("appsettings.json", false)
+                .AddEnvironmentVariables()
+                .Build();
+
             ConfigureLogging();
 
             try
             {
+                var connectionString = _config.GetConnectionString("Db");
+
+                Log.ForContext("ConnectionString", connectionString)
+                    .Information("Loaded config!", connectionString);
+
                 Log.ForContext("Args", args)
                    .Information("Starting program...");
 
