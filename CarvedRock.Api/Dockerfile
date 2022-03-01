@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-ENV ASPNETCORE_URLS=http://+:80
+ENV SimpleProperty="hello-from-BASE-dockerfile"
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
 WORKDIR /src
@@ -19,4 +19,5 @@ RUN dotnet publish "CarvedRock.Api.csproj" -c Release -o /app/publish /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV SimpleProperty="hello-from-FINAL-dockerfile"
 ENTRYPOINT ["dotnet", "CarvedRock.Api.dll"]
