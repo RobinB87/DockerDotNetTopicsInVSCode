@@ -12,15 +12,24 @@ services:
       - SimpleProperty="hello-from-code-compose"
     depends_on: 
       - seq_in_dc
+      - rabbit_in_dc
 
   carvedrock.app:
     build:
       context: .
       dockerfile: CarvedRock.App/Dockerfile
     ports:
-      - "8001:80"
+      - "8081:80"
     depends_on:
       - seq_in_dc
+      
+  carvedrock.orderprocessor:
+    build:
+      context: .
+      dockerfile: CarvedRock.OrderProcessor/Dockerfile
+    depends_on:
+      - seq_in_dc
+      - rabbit_in_dc
 
   seq_in_dc:    
     image: datalust/seq    
@@ -29,4 +38,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
 
-
+  rabbit_in_dc:
+    image: rabbitmq:3-management
+    ports:
+      - 8088:15672
