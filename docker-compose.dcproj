@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>3c0783fa-b43c-4d7f-8c3e-7926a9e1cad6</ProjectGuid>
+    <ProjectGuid>5076c93e-5f60-4cba-a427-0189f2a31ff2</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>carvedrock.api</DockerServiceName>

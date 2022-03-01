@@ -4,5 +4,7 @@ services:
   carvedrock.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "80"
+
+  carvedrock.app:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
