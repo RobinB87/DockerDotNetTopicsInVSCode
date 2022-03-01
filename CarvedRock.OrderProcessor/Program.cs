@@ -18,7 +18,7 @@ namespace CarvedRock.OrderProcessor
                 // Container Id for Dockerized apps
                 .Enrich.WithMachineName()
                 .Enrich.WithProperty("Assymbly", name)
-                .WriteTo.Seq(serverUrl: "http://host.docker.internal:5341")
+                .WriteTo.Seq(serverUrl: "http://seq_in_dc:5341")
                 .WriteTo.Console()
                 .CreateLogger();
 
