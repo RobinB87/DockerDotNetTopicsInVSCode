@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CarvedRock.OrderProcessor.Models;
+using CarvedRock.OrderProcessor.Repository;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -13,13 +14,15 @@ namespace CarvedRock.OrderProcessor
 {
     public class Worker : BackgroundService
     {
+        private readonly IInventoryRepository _repo;
         private readonly IConnection _connection;
         private readonly IModel _channel;
         private string queueName = "quickorder.received";
         private EventingBasicConsumer _consumer;
 
-        public Worker(IConfiguration config)
+        public Worker(IConfiguration config, IInventoryRepository repo)
         {
+            _repo = repo;
             var factory = new ConnectionFactory
             {
                 HostName = config.GetValue<string>("RabbitMqHost")
@@ -39,7 +42,7 @@ namespace CarvedRock.OrderProcessor
                 }
                 if (_connection == null) throw;
             }
-
+            
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false,
                 arguments: null);
@@ -58,12 +61,16 @@ namespace CarvedRock.OrderProcessor
             return Task.CompletedTask;
         }
 
-        private void ProcessQuickOrderReceived(object sender, BasicDeliverEventArgs eventArgs)
+        private async void ProcessQuickOrderReceived(object sender, BasicDeliverEventArgs eventArgs)
         {
             var orderInfo = JsonSerializer.Deserialize<QuickOrderReceivedMessage>(eventArgs.Body.ToArray());
 
             Log.ForContext("OrderReceived", orderInfo, true)
                 .Information("Received message from queue for processing.");
+
+            var currentQuantity = await _repo.GetInventoryForProduct(orderInfo.Order.ProductId);
+            await _repo.UpdateInventoryForProduct(orderInfo.Order.ProductId,
+                currentQuantity - orderInfo.Order.Quantity);
         }
     }
 }

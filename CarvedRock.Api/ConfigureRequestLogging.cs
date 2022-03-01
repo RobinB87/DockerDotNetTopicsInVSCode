@@ -11,17 +11,22 @@ namespace CarvedRock.Api
     {
         public static IApplicationBuilder UseCustomRequestLogging(this IApplicationBuilder app)
         {
-            return app.UseSerilogRequestLogging(o => 
+            return app.UseSerilogRequestLogging(options =>
             {
-                o.GetLevel = ExcludeHealthChecks;    
-                o.EnrichDiagnosticContext = (diagnosticContext, httpContext) => {
+                // health check exclusion inspiration: 
+                // https://andrewlock.net/using-serilog-aspnetcore-in-asp-net-core-3-excluding-health-check-endpoints-from-serilog-request-logging/
+                options.GetLevel = ExcludeHealthChecks;
+                options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
                     diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
                     diagnosticContext.Set("UserAgent", httpContext.Request.Headers["User-Agent"]);
+                    // could add user information: var user = httpContext.User.Identity;                    
                 };
             });
+
         }
 
-        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double _, Exception ex) => 
+        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double _, Exception ex) =>
             ex != null
                 ? LogEventLevel.Error
                 : ctx.Response.StatusCode > 499
@@ -32,9 +37,9 @@ namespace CarvedRock.Api
 
         private static bool IsHealthCheckEndpoint(HttpContext ctx)
         {
-            var userAgent = ctx.Request.Headers["User-Agent"].FirstOrDefault() ?? string.Empty;
-            return ctx.Request.Path.Value.EndsWith("health", StringComparison.CurrentCultureIgnoreCase) || 
-                userAgent.Contains("HealthCheck", StringComparison.InvariantCultureIgnoreCase);
+            var userAgent = ctx.Request.Headers["User-Agent"].FirstOrDefault() ?? "";
+            return ctx.Request.Path.Value.EndsWith("health", StringComparison.CurrentCultureIgnoreCase) ||
+                   userAgent.Contains("HealthCheck", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

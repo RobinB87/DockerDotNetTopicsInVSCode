@@ -27,10 +27,10 @@ namespace CarvedRock.Api.Integrations
 
         public void QuickOrderReceived(QuickOrder order, int customerId, Guid orderId)
         {
-            var message = new QuickOrderReceivedMessage { Order = order, CustomerId = customerId, OrderId = orderId };
+            var message = new QuickOrderReceivedMessage {Order = order, CustomerId = customerId, OrderId = orderId};
 
             var messageBytes = JsonSerializer.SerializeToUtf8Bytes(message);
-            _channel.BasicPublish("", routingKey: queueName, basicProperties: null, body: messageBytes);
+            _channel.BasicPublish("", routingKey: queueName, basicProperties:null, body: messageBytes);
             Log.ForContext("Body", message, true)
                .Information("Published quickorder notification");
         }

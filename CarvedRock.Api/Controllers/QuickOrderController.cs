@@ -21,10 +21,10 @@ namespace CarvedRock.Api.Controllers
         }
 
         [HttpPost]
-        public Guid SubmitQuickOrder(QuickOrder orderInfo)
+        public async Task<Guid> SubmitQuickOrder(QuickOrder orderInfo)
         {
             _logger.LogInformation($"Submitting order for {orderInfo.Quantity} of {orderInfo.ProductId}.");
-            return _orderLogic.PlaceQuickOrder(orderInfo, 1234); // would get customer id from authN system/User claims
+            return await _orderLogic.PlaceQuickOrder(orderInfo, 1234); // would get customer id from authN system/User claims
         }
     }
 }

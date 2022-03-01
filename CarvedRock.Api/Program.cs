@@ -40,9 +40,9 @@ namespace CarvedRock.Api
                 Log.CloseAndFlush();
             }
         }
-
+        
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-		    // http://bit.ly/aspnet-builder-defaults
+            // http://bit.ly/aspnet-builder-defaults
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>

@@ -6,6 +6,6 @@ namespace CarvedRock.Api.Interfaces
 {
     public interface IQuickOrderLogic
     {
-        Guid PlaceQuickOrder(QuickOrder order, int customerId);
+        Task<Guid> PlaceQuickOrder(QuickOrder order, int customerId);
     }
 }
